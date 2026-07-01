@@ -8,7 +8,8 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-  ScrollView
+  ScrollView,
+  Image
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
@@ -50,7 +51,12 @@ export default function Register() {
     >
       <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
-          <Text style={styles.title}>Mobile Shop</Text>
+          <Image
+            source={require('../../../assets/images/logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.title}>Pradeep Mobiles</Text>
           <Text style={styles.subtitle}>Inventory & Revenue Manager</Text>
         </View>
 
@@ -136,6 +142,11 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     marginBottom: Theme.spacing.xl
+  },
+  logo: {
+    width: 160,
+    height: 90,
+    marginBottom: Theme.spacing.sm
   },
   title: {
     fontSize: 32,

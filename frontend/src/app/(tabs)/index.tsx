@@ -7,7 +7,8 @@ import {
   ActivityIndicator,
   Dimensions,
   RefreshControl,
-  TouchableOpacity
+  TouchableOpacity,
+  Image
 } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useAuth } from '../../context/AuthContext';
@@ -144,8 +145,13 @@ export default function Dashboard() {
     >
       {/* Header Info */}
       <View style={styles.header}>
-        <View>
-          <Text style={styles.storeName}>{user?.storeName || 'My Mobile Shop'}</Text>
+        <Image
+          source={require('../../../assets/images/logo.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+        <View style={styles.headerTextContainer}>
+          <Text style={styles.storeName}>Pradeep Mobiles</Text>
           <Text style={styles.dateText}>
             {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
           </Text>
@@ -316,12 +322,20 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: Theme.spacing.md
   },
+  logo: {
+    width: 60,
+    height: 36,
+    marginRight: Theme.spacing.sm,
+    borderRadius: Theme.roundness.sm
+  },
+  headerTextContainer: {
+    flex: 1
+  },
   storeName: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
     color: Theme.colors.text
   },

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
+import { Image } from 'react-native';
 import { Theme } from '../../constants/Theme';
 import { Home, Package, Scan, Layers, BarChart3, Settings } from 'lucide-react-native';
 
@@ -7,6 +8,13 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
+        headerLeft: () => (
+          <Image
+            source={require('../../../assets/images/logo.png')}
+            style={{ width: 44, height: 28, marginLeft: 16, borderRadius: 4 }}
+            resizeMode="contain"
+          />
+        ),
         headerStyle: {
           backgroundColor: Theme.colors.background,
           borderBottomWidth: 1,
@@ -35,7 +43,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Dashboard',
+          title: 'Pradeep Mobiles',
           tabBarLabel: 'Dashboard',
           tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
         }}
