@@ -51,4 +51,10 @@ const AccessoryItemSchema = new mongoose.Schema({
   timestamps: true
 });
 
+// Performance indexes
+AccessoryItemSchema.index({ user: 1, category: 1 });
+AccessoryItemSchema.index({ user: 1, updatedAt: -1 });
+AccessoryItemSchema.index({ user: 1, quantity: 1 });
+AccessoryItemSchema.index({ user: 1, category: 1, brand: 1, modelCompatibility: 1 });
+
 module.exports = mongoose.model('AccessoryItem', AccessoryItemSchema);

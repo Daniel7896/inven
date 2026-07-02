@@ -61,4 +61,8 @@ SaleSchema.pre('save', function(next) {
   next();
 });
 
+// Performance indexes
+SaleSchema.index({ user: 1, date: -1 });
+SaleSchema.index({ user: 1, type: 1, date: -1 });
+
 module.exports = mongoose.model('Sale', SaleSchema);

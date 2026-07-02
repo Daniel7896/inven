@@ -9,6 +9,21 @@ const generateToken = (id) => {
   });
 };
 
+// Email validation regex
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+// Password strength check
+const isStrongPassword = (password) => {
+  // At least 6 chars, 1 letter, 1 number
+  return password.length >= 6 && /[a-zA-Z]/.test(password) && /\d/.test(password);
+};
+
+// Sanitize user input (strip dangerous chars)
+const sanitize = (str) => {
+  if (typeof str !== 'string') return str;
+  return str.replace(/[${}]/g, '').trim();
+};
+
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
@@ -17,20 +32,32 @@ const registerUser = async (req, res) => {
     const { email, password, storeName } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: 'Please add all fields' });
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+
+    const cleanEmail = sanitize(email).toLowerCase();
+
+    if (!isValidEmail(cleanEmail)) {
+      return res.status(400).json({ message: 'Please enter a valid email address' });
+    }
+
+    if (!isStrongPassword(password)) {
+      return res.status(400).json({ 
+        message: 'Password must be at least 6 characters with at least 1 letter and 1 number' 
+      });
     }
 
     // Check if user exists
-    const userExists = await User.findOne({ email });
+    const userExists = await User.findOne({ email: cleanEmail });
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
     // Create user
     const user = await User.create({
-      email,
+      email: cleanEmail,
       password,
-      storeName: storeName || 'My Mobile Shop'
+      storeName: sanitize(storeName) || 'My Mobile Shop'
     });
 
     if (user) {
@@ -56,7 +83,8 @@ const registerUser = async (req, res) => {
       res.status(400).json({ message: 'Invalid user data' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Register error:', error.message);
+    res.status(500).json({ message: 'Registration failed. Please try again.' });
   }
 };
 
@@ -67,8 +95,14 @@ const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+
+    const cleanEmail = sanitize(email).toLowerCase();
+
     // Check for user email
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: cleanEmail });
 
     if (user && (await user.comparePassword(password))) {
       res.json({
@@ -79,10 +113,12 @@ const loginUser = async (req, res) => {
         token: generateToken(user._id)
       });
     } else {
-      res.status(401).json({ message: 'Invalid credentials' });
+      // Generic message to prevent user enumeration
+      res.status(401).json({ message: 'Invalid email or password' });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Login error:', error.message);
+    res.status(500).json({ message: 'Login failed. Please try again.' });
   }
 };
 
@@ -93,7 +129,7 @@ const getUserProfile = async (req, res) => {
   try {
     res.status(200).json(req.user);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: 'Failed to fetch profile' });
   }
 };
 
@@ -109,13 +145,23 @@ const updateUserSettings = async (req, res) => {
     }
 
     if (req.body.storeName) {
-      user.storeName = req.body.storeName;
+      user.storeName = sanitize(req.body.storeName);
     }
 
     if (req.body.settings) {
+      // Whitelist allowed settings fields
+      const allowedSettings = ['currency', 'lowStockThreshold', 'paymentMethods'];
+      const cleanSettings = {};
+      
+      for (const key of allowedSettings) {
+        if (req.body.settings[key] !== undefined) {
+          cleanSettings[key] = req.body.settings[key];
+        }
+      }
+
       user.settings = {
         ...user.settings.toObject(),
-        ...req.body.settings
+        ...cleanSettings
       };
     }
 
@@ -128,7 +174,8 @@ const updateUserSettings = async (req, res) => {
       settings: updatedUser.settings
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Settings update error:', error.message);
+    res.status(500).json({ message: 'Failed to update settings' });
   }
 };
 

@@ -70,4 +70,10 @@ const PhoneSchema = new mongoose.Schema({
   timestamps: true
 });
 
+// Performance indexes
+PhoneSchema.index({ user: 1, status: 1 });
+PhoneSchema.index({ user: 1, updatedAt: -1 });
+PhoneSchema.index({ user: 1, brand: 1, model: 1, variant: 1, ram: 1, storage: 1, color: 1 });
+PhoneSchema.index({ user: 1, quantity: 1 });
+
 module.exports = mongoose.model('Phone', PhoneSchema);
