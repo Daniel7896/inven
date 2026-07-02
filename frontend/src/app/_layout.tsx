@@ -2,8 +2,14 @@ import React, { useEffect } from 'react';
 import { Slot, useRouter, useSegments } from 'expo-router';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, View, StyleSheet, LogBox } from 'react-native';
 import { Theme } from '../constants/Theme';
+
+// Ignore the harmless react-native-chart-kit warning on web
+LogBox.ignoreLogs([
+  'Unknown event handler property `onPressIn`',
+  'shadow* style props are deprecated'
+]);
 
 function NavigationWrapper() {
   const { user, isLoading } = useAuth();
