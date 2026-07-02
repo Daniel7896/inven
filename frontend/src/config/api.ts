@@ -5,6 +5,11 @@ import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 
 const getApiBaseUrl = () => {
+  // Auto-connect to live Render backend in production builds
+  if (!__DEV__) {
+    return 'https://inventory-backend-j1du.onrender.com';
+  }
+
   if (Platform.OS === 'web') {
     return 'http://localhost:5000';
   }
