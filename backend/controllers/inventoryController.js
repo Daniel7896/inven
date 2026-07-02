@@ -13,7 +13,8 @@ const getInventory = async (req, res) => {
     }
 
     if (search) {
-      const searchRegex = new RegExp(search, 'i');
+      const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const searchRegex = new RegExp(escapeRegex(search), 'i');
       query.$or = [
         { brand: searchRegex },
         { model: searchRegex },

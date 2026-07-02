@@ -1,5 +1,6 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getSecureItem } from './secureStore';
 import { Platform } from 'react-native';
 
 const getLocalIp = () => {
@@ -20,7 +21,7 @@ const api = axios.create({
 api.interceptors.request.use(
   async (config) => {
     try {
-      const token = await AsyncStorage.getItem('jwt_token');
+      const token = await getSecureItem('jwt_token');
       const customUrl = await AsyncStorage.getItem('custom_api_url');
       
       if (customUrl && customUrl.trim() !== '') {

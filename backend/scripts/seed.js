@@ -1,3 +1,6 @@
+// WARNING: This script is intended to seed test/demo data for development purposes.
+// It must NEVER be run against the production database once real users exist.
+
 const mongoose = require('mongoose');
 const User = require('../models/User');
 const Phone = require('../models/Phone');
@@ -14,13 +17,17 @@ const seed = async () => {
     await mongoose.connect(connStr);
     console.log('Connected to MongoDB for seeding...');
 
-    // Clear existing data
-    await User.deleteMany({});
-    await Phone.deleteMany({});
-    await Sale.deleteMany({});
-    await AccessoryCategory.deleteMany({});
-    await AccessoryItem.deleteMany({});
-    console.log('Cleared existing collections.');
+    // Clear existing test data only
+    const TEST_EMAIL = 'test@example.com';
+    const existingTestUser = await User.findOne({ email: TEST_EMAIL });
+    if (existingTestUser) {
+      await Phone.deleteMany({ user: existingTestUser._id });
+      await Sale.deleteMany({ user: existingTestUser._id });
+      await AccessoryCategory.deleteMany({ user: existingTestUser._id });
+      await AccessoryItem.deleteMany({ user: existingTestUser._id });
+      await User.deleteOne({ _id: existingTestUser._id });
+    }
+    console.log('Cleared existing test user data.');
 
     // 1. Create a Test User
     const testUser = new User({

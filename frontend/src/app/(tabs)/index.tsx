@@ -151,7 +151,7 @@ export default function Dashboard() {
           resizeMode="contain"
         />
         <View style={styles.headerTextContainer}>
-          <Text style={styles.storeName}>Pradeep Mobiles</Text>
+          <Text style={styles.storeName}>{user?.storeName || 'My Mobile Shop'}</Text>
           <Text style={styles.dateText}>
             {new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}
           </Text>

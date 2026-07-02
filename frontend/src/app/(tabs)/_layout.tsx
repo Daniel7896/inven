@@ -3,8 +3,11 @@ import { Tabs } from 'expo-router';
 import { Image } from 'react-native';
 import { Theme } from '../../constants/Theme';
 import { Home, Package, Scan, Layers, BarChart3, Settings } from 'lucide-react-native';
+import { useAuth } from '../../context/AuthContext';
 
 export default function TabLayout() {
+  const { user } = useAuth();
+
   return (
     <Tabs
       screenOptions={{
@@ -43,7 +46,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Pradeep Mobiles',
+          title: user?.storeName || 'My Mobile Shop',
           tabBarLabel: 'Dashboard',
           tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
         }}

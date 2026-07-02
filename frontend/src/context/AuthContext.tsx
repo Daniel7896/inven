@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getSecureItem, setSecureItem, deleteSecureItem } from '../config/secureStore';
 import api, { DEFAULT_API_URL } from '../config/api';
 
 interface Settings {
@@ -41,7 +42,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loadStoredData = async () => {
     try {
-      const storedToken = await AsyncStorage.getItem('jwt_token');
+      const storedToken = await getSecureItem('jwt_token');
       const storedUser = await AsyncStorage.getItem('user_profile');
       const storedApiUrl = await AsyncStorage.getItem('custom_api_url');
 
@@ -73,7 +74,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const cleanAuthSession = async () => {
     setUser(null);
     setToken(null);
-    await AsyncStorage.removeItem('jwt_token');
+    await deleteSecureItem('jwt_token');
     await AsyncStorage.removeItem('user_profile');
   };
 
@@ -86,7 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setToken(jwtToken);
       setUser(userData);
       
-      await AsyncStorage.setItem('jwt_token', jwtToken);
+      await setSecureItem('jwt_token', jwtToken);
       await AsyncStorage.setItem('user_profile', JSON.stringify(userData));
     } catch (error: any) {
       const msg = error.response?.data?.message || 'Login failed';
@@ -105,7 +106,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setToken(jwtToken);
       setUser(userData);
 
-      await AsyncStorage.setItem('jwt_token', jwtToken);
+      await setSecureItem('jwt_token', jwtToken);
       await AsyncStorage.setItem('user_profile', JSON.stringify(userData));
     } catch (error: any) {
       const msg = error.response?.data?.message || 'Registration failed';

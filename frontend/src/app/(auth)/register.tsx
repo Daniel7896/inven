@@ -56,7 +56,7 @@ export default function Register() {
             style={styles.logo}
             resizeMode="contain"
           />
-          <Text style={styles.title}>Pradeep Mobiles</Text>
+          <Text style={styles.title}>Mobile Shop Manager</Text>
           <Text style={styles.subtitle}>Inventory & Revenue Manager</Text>
         </View>
 

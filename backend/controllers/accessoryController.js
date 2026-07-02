@@ -25,10 +25,11 @@ const addCategory = async (req, res) => {
 
     const cleanName = name.trim();
 
+    const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     // Check if category exists for user (case insensitive)
     const exists = await AccessoryCategory.findOne({
       user: req.user._id,
-      name: { $regex: new RegExp(`^${cleanName}$`, 'i') }
+      name: { $regex: new RegExp(`^${escapeRegex(cleanName)}$`, 'i') }
     });
 
     if (exists) {
@@ -84,9 +85,11 @@ const getInventory = async (req, res) => {
     }
 
     if (search) {
+      const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const cleanSearch = escapeRegex(search);
       query.$or = [
-        { brand: { $regex: search, $options: 'i' } },
-        { modelCompatibility: { $regex: search, $options: 'i' } }
+        { brand: { $regex: cleanSearch, $options: 'i' } },
+        { modelCompatibility: { $regex: cleanSearch, $options: 'i' } }
       ];
     }
 

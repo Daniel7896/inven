@@ -9,7 +9,8 @@ import {
   ScrollView,
   Image,
   Alert,
-  Button
+  Button,
+  Platform
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { CameraView, useCameraPermissions } from 'expo-camera';
@@ -80,23 +81,32 @@ export default function ScanBox() {
     try {
       const formData = new FormData();
       
-      // If we have base64 data, we can send it or upload as a file
       if (imageUri) {
-        const uriParts = imageUri.split('.');
-        const fileType = uriParts[uriParts.length - 1];
-        
-        formData.append('image', {
-          uri: imageUri,
-          name: `photo.${fileType}`,
-          type: `image/${fileType === 'png' ? 'png' : 'jpeg'}`
-        } as any);
+        if (Platform.OS === 'web') {
+          // Web: fetch the URI as blob and append properly
+          const response = await fetch(imageUri);
+          const blob = await response.blob();
+          const extension = blob.type === 'image/png' ? 'png' : 'jpeg';
+          formData.append('image', blob, `photo.${extension}`);
+        } else {
+          // React Native: use { uri, name, type } format
+          const uriParts = imageUri.split('.');
+          const fileType = uriParts[uriParts.length - 1];
+          
+          formData.append('image', {
+            uri: imageUri,
+            name: `photo.${fileType}`,
+            type: `image/${fileType === 'png' ? 'png' : 'jpeg'}`
+          } as any);
+        }
       }
 
       console.log('Uploading photo to API...');
       const res = await api.post('/api/ai/scan', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
-        }
+        },
+        timeout: 30000, // 30s timeout for AI processing
       });
 
       const { data, isMock } = res.data;

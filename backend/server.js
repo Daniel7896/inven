@@ -6,6 +6,11 @@ const connectDB = require('./config/db');
 // Load environment variables
 dotenv.config();
 
+if (!process.env.JWT_SECRET) {
+  console.error('FATAL: JWT_SECRET is not set in environment variables.');
+  process.exit(1);
+}
+
 // Connect to Database
 connectDB();
 
